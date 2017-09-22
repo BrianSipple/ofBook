@@ -101,9 +101,9 @@ will set the current frame to 100 both in player and player2 since actually both
 
 ### Data containers
 
-This classes contain data and can do some operations on the data they contain. Examples are classes like ofPixels or ofBuffer.
+These classes contain data and can do some operations on the data they contain. Examples are classes like ofPixels or ofBuffer.
 
-This classes follow an allocate/loadData pattern. Allocate reserves memory in the container to then put data in it using loadData. The names of these functions change depending on the class but the functionality is the same. Copying this classes makes a depth copy, that means that a copy is a whole new object with the same contents as the original so modifying the copy won't touch the original.
+These classes follow an allocate/loadData pattern. Allocate reserves memory in the container to then put data in it using loadData. The names of these functions change depending on the class but the functionality is the same. Copying these classes makes a depth copy, that means that a copy is a whole new object with the same contents as the original so modifying the copy won't touch the original.
 
 __ofApp.h__
 
@@ -177,4 +177,4 @@ These are classes that represent types in openFrameworks like `ofRectangle`, `of
 
 ## Functions
 
-Some functionality in openFrameworks is provided through plain C functions. This are usually utility functions like `ofToString()`, `ofRandom()`, `ofDrawBitmapString()` and simple draw functions like `ofDrawCircle()`, `ofDrawRectangle()`.
+Some functionality in openFrameworks is provided through plain C functions. These are usually utility functions like `ofToString()`, `ofRandom()`, `ofDrawBitmapString()` and simple draw functions like `ofDrawCircle()`, `ofDrawRectangle()`.
