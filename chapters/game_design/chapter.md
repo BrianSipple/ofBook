@@ -8,13 +8,13 @@ Game developers are, in greater and greater numbers, turning to openFrameworks' 
 
 ### Popular games made with openFrameworks
 
-![Spell Tower by Zach Gage](images/RushModeSm.png "Spell Tower by Zach Gage")  
+![Spell Tower by Zach Gage](images/RushModeSm.png "Spell Tower by Zach Gage")
 
 ![Particle Mace by Andy Wallace](images/particleMace.png "Particle Mace by Andy Wallace")
 
-![Eliss by Steph Thirion](images/eliss012.jpg "Eliss by Steph Thirion")  
+![Eliss by Steph Thirion](images/eliss012.jpg "Eliss by Steph Thirion")
 
-![Scream Em Up by Jane Friedhoff](images/screamup.png "Scream Em Up by Jane Friedhoff")  
+![Scream Em Up by Jane Friedhoff](images/screamup.png "Scream Em Up by Jane Friedhoff")
 
 In this chapter, we'll learn about game development in openFrameworks. We'll cover what goes into making a game, as well as how to code a simple space shooter. Finally, we'll put an experimental oF twist on our game by implementing OSC functionality, which will allow you to alter the difficulty of the game live (while the player is playing it).
 
@@ -42,7 +42,7 @@ OSC messages consist of the following:
 * A Type tag string. This simply represents the kind of data being sent (e.g. `int`, `string`).
 * Arguments. The actual value that is being transmitted (e.g. `6`, `"Hello world"`, etc.).
 
-There are plenty of inexpensive apps for smartphones and tablets that provide customizable GUIs (complete with buttons, sliders, etc.) for sending different kinds of MIDI messages. Download one (we like TouchOSC) so we have something to send our messages with.
+There are plenty of inexpensive apps for smartphones and tablets that provide customizable GUIs (complete with buttons, sliders, etc.) for sending different kinds of MIDI messages. Download one (we like [TouchOSC](https://hexler.net/software/touchosc)) so we have something to send our messages with.
 With this in mind, let's start making our game!
 
 ## Our basic game–and making it not so basic
@@ -57,7 +57,7 @@ Here's what our game will have:
 * Bullets (for the player and the enemies), which have an on-screen position, images to represent them, a way to keep track of where they come from (player or enemy), and a speed
 * Bonus lives, which have an on-screen position, an image to represent them, and a speed
 
-![Space Game in action!](images/game.png "Space Game in action!")   
+![Space Game in action!](images/game.png "Space Game in action!")
 
 With all that written out, let's use OSC to affect the following:
 
@@ -221,7 +221,7 @@ Add `ofImage player_image` to `ofApp.h`, then load the player's image and instan
 ```cpp
 void ofApp::setup(){
    game_state = "start";
-   player_image.loadImage("player.png");
+   player_image.load("player.png");
 
    player_1.setup(&player_image);
 }
@@ -247,7 +247,7 @@ void ofApp::draw(){
        player_1.draw();
    } else if (game_state == "end") {
 
-   }  
+   }
 }
 ```
 
@@ -283,7 +283,7 @@ void Bullet::setup(bool f_p, ofPoint p, float s, ofImage * bullet_image) {
    pos = p;
    speed = s + 3;
    img = bullet_image;
-   width = img->width;
+   width = img->getWidth();
 
 }
 void Bullet::update() {
@@ -304,7 +304,7 @@ Again, this is much like the code for the player, but with two differences:
 * We keep track of where the bullet comes from, and alter the code based on that variable (meaning we can keep all the bullets in the same vector)
 * When instantiating a bullet, we check to see the position of the shooter, as well as the shooter's current speed (so it will always move faster than the thing that shot it)
 
-Now that our bullet class is implemented, we can go back to `ofApp::setup()` and add `enemy_bullet_image.loadImage("enemy_bullet.png");` and `player_bullet_image.loadImage("player_bullet.png");` right underneath where we loaded in our `player_image`.
+Now that our bullet class is implemented, we can go back to `ofApp::setup()` and add `enemy_bullet_image.load("enemy_bullet.png");` and `player_bullet_image.load("player_bullet.png");` right underneath where we loaded in our `player_image`.
  
 For now, our `update_bullets()` function will call the `update()` function in each bullet, and will also get rid of bullets that have flown offscreen in either direction.
 
@@ -376,7 +376,7 @@ void ofApp::keyPressed(int key){
            Bullet b;
            b.setup(true, player_1.pos, player_1.speed, &player_bullet_image);
            bullets.push_back(b);
-       }   
+       }
    }
 }
 ```
@@ -416,7 +416,7 @@ void Enemy::setup(float max_enemy_amplitude, float max_enemy_shoot_interval, ofI
    pos.x = ofRandom(ofGetWidth());
    pos.y = 0;
    img = enemy_image;
-   width = img->width;
+   width = img->getWidth();
    speed = ofRandom(2, 7);
    amplitude = ofRandom(max_enemy_amplitude);
    shoot_interval = ofRandom(0.5, max_enemy_shoot_interval);
@@ -451,10 +451,10 @@ void ofApp::setup(){
    max_enemy_amplitude = 3.0;
    max_enemy_shoot_interval = 1.5;
 
-   enemy_image.loadImage("enemy0.png");
-   player_image.loadImage("player.png");
-   enemy_bullet_image.loadImage("enemy_bullet.png");
-   player_bullet_image.loadImage("player_bullet.png");
+   enemy_image.load("enemy0.png");
+   player_image.load("player.png");
+   enemy_bullet_image.load("enemy_bullet.png");
+   player_bullet_image.load("player_bullet.png");
 
    player_1.setup(&player_image);
 }
@@ -624,7 +624,7 @@ Awesome! We're close to done!
 
 ### Bonus lives
 
-Before we finish, let's add in our last OSC feature: the ability to throw in bonus lives on the fly. Add `vector<Life> bonuses` and `ofImage life_image` to your `ofApp.h`. To keep our code modular, let's also add `void update_bonuses()` in the same place. Don't forget to `life_image.loadImage("life_image.png")` in `ofApp::setup()`.
+Before we finish, let's add in our last OSC feature: the ability to throw in bonus lives on the fly. Add `vector<Life> bonuses` and `ofImage life_image` to your `ofApp.h`. To keep our code modular, let's also add `void update_bonuses()` in the same place. Don't forget to `life_image.load("life_image.png")` in `ofApp::setup()`.
 
 `Life.h` should look like this:
 
@@ -648,16 +648,16 @@ It'll function like this (a lot like the bullet):
 ```cpp
 void Life::setup(ofImage * _img) {
    img = _img;
-   width = img->width;
+   width = img->getWidth();
    speed = 5;
    pos.x = ofRandom(ofGetWidth());
-   pos.y = -img->width/2;
+   pos.y = -img->getWidth()/2;
 }
 void Life::update() {
    pos.y += speed;
 }
 void Life::draw() {
-   img->draw(pos.x - img->width/2, pos.y - img->width/2);
+   img->draw(pos.x - img->getWidth()/2, pos.y - img->getWidth()/2);
 }
 ```
 
@@ -730,7 +730,7 @@ void ofApp::draw(){
        }
    } else if (game_state == "end") {
 
-   }    
+   }
 }
 ```
 
@@ -745,9 +745,9 @@ Change `ofApp::setup()` to load in those assets:
 void ofApp::setup(){
     ...
    player_1.setup(&player_image);
-   start_screen.loadImage("start_screen.png");
-   end_screen.loadImage("end_screen.png");
-   score_font.loadFont("Gota_Light.otf", 48);
+   start_screen.load("start_screen.png");
+   end_screen.load("end_screen.png");
+   score_font.load("Gota_Light.otf", 48);
 }
 ```
 
@@ -787,10 +787,10 @@ Now let's add in the OSC functionality. We are going to set our application up t
 
 *TouchOSC is used to switch game levels on the fly and to run challenges.*
 
-To accomplish this we are going to create a new class that will contain our OSC functionality. Create a .cpp and .h file for this class now and name it LiveTesting. Open `LiveTesting.h`
+To accomplish this we are going to create a new class that will contain our OSC functionality. Create a .cpp and .h file for this class now and name it LiveTesting. Open `LiveTesting.h`.
 And let's add the line to import the OSC at the top of your file after your preprocessor directives and also a line for using iostream for testing purposes. As we add the code we will explain inline in code comments.
 
-Add the following: 	
+Add the following:
 
 ```cpp
 #include <iostream>
@@ -805,14 +805,14 @@ class LiveTesting
 {
 public:
     LiveTesting();
-    //a default c++ constructor  
+    //a default c++ constructor
     void setup();	//for setup
     void update(); //for updating
 
     ofxOscSender sender;
     //you can set up a sender!
     //We are going to use this network connection to give us
-    //some visual feedback of our current game values.  
+    //some visual feedback of our current game values.
 
     ofxOscReceiver receiver;
     //this is the magic! This is the port on which your game gets incoming data.
@@ -836,7 +836,7 @@ For the purpose of this chapter and to allow us to create an experience that wil
 
 The desktop editor software is free, however, the matching software for your device will be $4.99. Get both now. As a matter of principle, we endorse building your own tools and you could easily build a second oF project to be your OSC sender and receiver on your mobile device. With that said, nothing beats TouchOSC for speed, ease of use, and complete, platform independent flexibility. If you are someone who often moves between an iOS and Android device on both Windows and Mac, this tool will become indispensible to you. As a game's designer it can open up possibilities like changing levels on the fly, updating game variables, adjusting for-player feedback, and adding new features into and taking them out of your game as it's running. We highly endorse using it and support the continued advancement of the tool. You can also use it with music production tools like Ableton Live and it comes with great presets for things like DJing and mixing music live. Go to the app store of your device and purchase the mobile version now if you would like to continue down this route.
 
-After we get all of the tools downloaded and installed, let's start setting everything up. You are going to need two bits of information. You are going to need to know the IP address of your computer and the IP address of your laptop. If you are on a Mac, just open up your System Preferences. Go to the Network setting and click on your WiFi connection in the left sidebar. On the right side it will display your IP address. You can also get this setting by opening up Terminal and entering in the command "ifconfig." Terminal will list every network that's a possible connection for your machine from the past, even if it's not currently active. For example, if you have ever connected your phone, it will be in the list with some flag and listed as inactive. Look for the connection that's currently active. It will look something like this:
+After we get all of the tools downloaded and installed, let's start setting everything up. You are going to need two bits of information. You are going to need to know the IP address of your computer and the IP address of your mobile device. If you are on a Mac, just open up your System Preferences. Go to the Network setting and click on your WiFi connection in the left sidebar. On the right side it will display your IP address. You can also get this setting by opening up Terminal and entering in the command "ifconfig." Terminal will list every network that's a possible connection for your machine from the past, even if it's not currently active. For example, if you have ever connected your phone, it will be in the list with some flag and listed as inactive. Look for the connection that's currently active. It will look something like this:
 
 ```
 en1: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
@@ -888,7 +888,7 @@ This is the pattern we are going to use for all of our knobs and labels. Essenti
 
 Do this now for the other two knobs. The settings are below for each one.
 
-**Label / Knob Set Two**
+#### Label / Knob Set Two
 
 * Label H
 	* Color: orange
@@ -901,11 +901,11 @@ Do this now for the other two knobs. The settings are below for each one.
 	* Color: Orange
 	* OSC: /updatedVals/max_enemy_shoot_interval
 
-**Label / Knob Set Three**
+#### Label / Knob Set Three
 
-* Label H   
+* Label H
 	* Color: Green
-	* Text: max enemy amplitude
+	* Text: Max Enemy Amplitude
 * Rotary H
 	* Color: Green
 	* OSC: /game/max_enemy_amplitude
@@ -913,8 +913,9 @@ Do this now for the other two knobs. The settings are below for each one.
 * Label H
 	* Color: Green
 	* OSC: /updatedVals/max_enemy_amplitude
-**[KL: The first two oranges on the list aren't capitalized like the remaining colors. I didn't want to change it without double checking that they aren't lowercase for a reason. If that's not the case, I'd capitalize them for consistency.]**
-**Set Four**
+
+
+#### Set Four
 
 We are going to add one more but this one will be a Push Button instead of a RotaryH. Right click to create it just like the knob. Make the Push Button and two labels. Here are the settings:
 
@@ -933,9 +934,13 @@ Save your file to your hard drive desktop and name it `PlaytestInterface`.
 
 You are done building your interface for play testing. Now let's deploy it! On your mobile device, launch TouchOSC. It will launch and open a settings screen.
 
-This is when we need the network address of your computer we retrieved earlier. Under Connections, touch OSC: **[KL: Is this colon intentional? Unfortunately I can't follow this part of the tutorial right now to know for sure.]**  and set it to the IP address of your computer to link the two. It should look something like `192.165.0.3`.
+This is when we need the network address of your computer we retrieved earlier. Under Connections, touch OSC, and set `Host` to the IP address of the computer you're linking your device to. It should look something like `192.165.0.3`.
 
-The ports also need set. Tap each one and set them to these values:
+Next, we'll set the ports to use for outgoing and incoming messages.
+
+This involves knowing which IP address and port on our computer that our device will send to, and vice versa. Your computer will have only one IP address but it can send and receive data on thousands of ports. We aren't going into too much detail about ports, but you can think of the IP address like a boat pier. Lots of boats can be docked at a single pier. This is no different. Your ports are your docks and your IP address is your pier. You can think of the data like the people departing and arriving. You'll need a separate port for each activity in this scenario. If a port isn't used by your operating system, you can send and receive data there.
+
+We'll set the two ports in TouchOSC as follows:
 
 ```
 Port (outgoing) 8001
@@ -948,9 +953,9 @@ Now click on `Layout`. Then tap `Add`. It will start to search for your computer
 
 ![](images/sync.png)
 
-Switch back to your device. You should see your computer listed under FOUND HOSTS. Select it. It will pop back to the settings screen. Scroll down and find PlaytestInterface in the list of interfaces. Select it and it will take you back to the main menu. Press Done in the upper left corner and your interface will now launch. If you want to get back to the settings screen at any point, the white dot in the upper right-hand corner will return the user interface to that screen.
+Switch back to your device. You should see your computer listed under FOUND HOSTS. Select it. It will pop back to the settings screen. Scroll down and find `PlaytestInterface` in the list of interfaces. Select it and it will take you back to the main menu. Press Done in the upper left corner and your interface will now launch. If you want to get back to the settings screen at any point, the white dot in the upper right-hand corner will return the user interface to that screen.
 
-Finally, TouchOSC is set up! Let's link it to our game and run our very first playtest. Go back to the programming IDE. Open `LiveTesting.cpp`. In our default constructor, we will now set up our game to send and receive values over the network. To do this we will need to know which IP address and port on our device we will send to as well as set up a port on our local computer's network to receive incoming data. Your computer will have only one IP address but it can send and receive data on thousands of ports. We aren't going into too much detail about ports, but you can think of the IP address like a boat pier. Lots of boats can be docked at a single pier. This is no different. Your ports are your docks and your IP address is your pier. You can think of the data like the people departing and arriving. You'll need a separate port for each activity in this scenario. If a port isn't used by your operating system, you can send and receive data there. **[KL: since IP addresses were mentioned earlier, maybe this analogy should also be introduced earlier.]** We are going to use `8000` and `8001`. The final thing to establish is the address pattern. It will look like a file path and allow us to specify that our messages match to their right values. Add this code:
+Finally, TouchOSC is set up! Let's link it to our game and run our very first playtest. Go back to the programming IDE. Open `LiveTesting.cpp`. In our default constructor, we will now set up our game to send and receive values over the network. To match the port values that we set on our device, we'll be using `8000` (the port for our computer) and `8001` (the port for our device). The final thing to establish is the address pattern. It will look like a file path and allow us to specify that our messages match to their right values. Add this code:
 
 ```cpp
 #include "LiveTesting.h"
@@ -961,38 +966,38 @@ LiveTesting::LiveTesting(){
     //this is the IP address of your iOS/Android device and the port it should be
     //set to receive on
 
-	receiver.setup(8001);
+	  receiver.setup(8001);
     /*this is the port your game will receive data on.
     For us this is the important one! Set your mobile device to send on this port.*/
 
     m.setAddress("/game");
 
-    /*This is OSC's URL like naming convention. You can use a root URL address like
+    /*This is OSC's URL-like naming convention. You can use a root URL address like
      structure and then everything under that address will be accessible by that message.
 
    	 It's very similar to a folder path on your hard drive. You can think of the
-     game folder as your root directory and all the bits that are
-     /game/someOtherName are inside of it.*/   
+     "/game" folder as your root directory and all the bits that are
+     "/game/someOtherName" are inside of it.*/
 }
 ```
 
-In the above code we simply set up our network address, incoming and outgoing ports and created a default address pattern. From here we should be good to set up the messages we'd like to send and receive in our code.
-Let's move on to the next major function we want to write. We need to run an update function in this class to update every frame so we can make sure that if we move a slider on our mobile device that change becomes reflected within the game. Also, we might want to send that value back out once we receive it so we can get some visual feedback on our device to let us know what our current settings are.
+In the above code we simply set up our sender with its network address outgoing ports, setup our receiver with its incoming port, and created a default address pattern for our message. From here we should be good to set up the messages we'd like to send and receive in our code.
+Let's move on to the next major function we want to write. We need to run an update function in this class to update every frame so we can make sure that if we move a slider on our mobile device, that change becomes reflected within the game. Also, we might want to send that value back out once we receive it so we can get some visual feedback on our device to let us know what our current settings are.
 
-Each time we make a change on our device, it will send over the updates to our code via TouchOSC. We want to make sure we get all of the incoming messages that are being sent so we will create a simple while loop. We will loop through the whole list of messages that came into our game that frame and match it to the corresponding variable in our game via if statements.
+Each time we make a change on our device, it will send over the updates to our code via TouchOSC. We want to make sure we get all of the incoming messages that are being sent, so we'll process them with a while loop on each frame, and use a series of if statements to match them to one of the variables we're interested in.
 
 ```cpp
-  while (receiver.hasWaitingMessages()) {        
+  while (receiver.hasWaitingMessages()) {
         //get the next message
         ofxOscMessage m;
         receiver.getNextMessage(&m);
 
 ```
 
-Every incoming message will come with its own unique address tag and new arguments. You can get access to a message's address via the getAddress function. For example,`if(m.getAddress() == "/game/max_enemy_amplitude")`, will test to see if the message address is /game/max_enemy_amplitude. If it is, set the variable equal to that value in your game's codebase so they are linked together. Every swipe of the knob will translate to direct changes in your game. We do this for every single value we want to set.  
+Every incoming message will come with its own unique address tag and new arguments. You can get access to a message's address via the `getAddress` function. For example,`if(m.getAddress() == "/game/max_enemy_amplitude")`, will test to see if the message address is /game/max_enemy_amplitude. If it is, set the variable equal to that value in your game's codebase so they are linked together. Every swipe of the knob will translate to direct changes in your game. We do this for every single value we want to set.
 
-```cpp      
-	if(m.getAddress() == "/game/max_enemy_amplitude")
+```cpp
+	if (m.getAddress() == "/game/max_enemy_amplitude")
         {
             max_enemy_amplitude = m.getArgAsFloat(0);
 
@@ -1006,8 +1011,8 @@ Every incoming message will come with its own unique address tag and new argumen
         }
 
 ```
-
-At the same time, we are also going to send those exact same values back out to our device so we can see the numbers that the settings in our game are currently at. **[KL: You might want to make this sentence more concise, preferably not ending with "at."]** This is handy for two reasons. One, you get visual feedback of the current variables' values on your device. Two, if you happen to land on settings that feel right in your game, you can take a screen cap on your device. After stopping the game, go back and change the variables to match in your code and the next time you run your program, it will start with those parameters.
+After we update the values in our game, we'll send them back to our device so that it can display our latest game state.
+This is handy for two reasons. One, you get visual feedback of the current variables's values on your device. Two, if you happen to land on settings that feel right in your game, you can take a screen cap on your device. After stopping the game, go back and change the variables to match in your code, and the game will start with those parameters the next time it runs.
 
 To pack up all of the values in our current running game and send them back to the device every frame, we will create a variable of type `ofxOscMessage` called `sendBack`. When we have a string match for the address in the `ofxOscMessage m`, we just copy the arguments over to `sendBack` via the right function (in this case usually `addFloatArg`) and set the address pattern using the `setAddress` function. Finally, we use the built in `sendMessage` function to send the message out over OSC.
 
@@ -1073,7 +1078,7 @@ void LiveTesting::update()
 
             interval_time = m.getArgAsInt32(0);
 
-            //Send visual feedback.  
+            //Send visual feedback.
             sendBack.addIntArg(interval_time);
             sendBack.setAddress("/updatedVals/interval");
             sender.sendMessage(sendBack);
@@ -1106,20 +1111,20 @@ void LiveTesting::update()
 
 You have reached the end of the tutorial. **[KL: Make this statement more congratulatory. It's a great accomplishment!]** Now do a real testing session. Run the game and have a friend play it while you change the knobs. Once you have settings you like, quit the game and add those values into the code to make them permanent updates.
 
-For a bonus challenge, find a few settings you like and create a difficulty ramp for the game using those values of time.  
+For a bonus challenge, find a few settings you like and create a difficulty ramp for the game using those values of time.
 
 ### Resouces
-We've reached the end of the chapter but not the end of the journey. A few great resources for independent games scene are listed here:   
-[Come Out And Play](http://www.comeoutandplay.org/)  
-[Kill Screen](http://killscreendaily.com/)  
-[Indiecade](http://www.indiecade.com)  
-[Babycastles](http://www.babycastles.com)  
-[Polygon](http://www.polygon.com/)  
-[IDGA](http://www.igda.org/)  
-[Game Dev Net](http://www.gamedev.net/page/index.html)  
-[Game Dev Stack Exchange](http://gamedev.stackexchange.com/)  
-[Gamasutra](http://gamasutra.com/)  
-[Digra](http://www.digra.org/)  
+We've reached the end of the chapter but not the end of the journey. A few great resources for independent games scene are listed here:
+[Come Out And Play](http://www.comeoutandplay.org/)
+[Kill Screen](http://killscreendaily.com/)
+[Indiecade](http://www.indiecade.com)
+[Babycastles](http://www.babycastles.com)
+[Polygon](http://www.polygon.com/)
+[IDGA](http://www.igda.org/)
+[Game Dev Net](http://www.gamedev.net/page/index.html)
+[Game Dev Stack Exchange](http://gamedev.stackexchange.com/)
+[Gamasutra](http://gamasutra.com/)
+[Digra](http://www.digra.org/)
 [Different Games](http://www.differentgames.org/)
 
 ### About us
